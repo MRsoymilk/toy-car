@@ -10,7 +10,7 @@ function nothing() {
     echo "| ./car sendtar   -- send tar archive to remote Host"
     echo "| ./car movetar   -- extra tar archive to ./html/images/, use in remote"
     echo "| ./car split     -- split original image to train(0.7) and test(0.3)"
-    echo "| ./car change    --  change original image to 32x32 for network"
+    echo "| ./car change    -- change original image to 32x32 for network"
     echo "| ./car train     -- train network"
     echo "| ./car dragon    -- ./car movetar, split, change, train, send model"
     echo "| ./car auto      -- control car by network"
