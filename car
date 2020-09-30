@@ -1,0 +1,163 @@
+#!/bin/bash
+
+function nothing() {
+    echo "usage:"
+    echo "car               -- Simplified operation"
+    echo "| ./car init      -- init basic folder"
+    echo "| ./car help      -- help infomation"
+    echo "| ./car camera    -- adjust car camera by computer"
+    echo "| ./car start     -- control car by computer"
+    echo "| ./car sendtar   -- send tar archive to remote Host"
+    echo "| ./car movetar   -- extra tar archive to ./html/images/, use in remote"
+    echo "| ./car split     -- split original image to train(0.7) and test(0.3)"
+    echo "| ./car change    --  change original image to 32x32 for network"
+    echo "| ./car train     -- train network"
+    echo "| ./car dragon    -- ./car movetar, split, change, train, send model"
+    echo "| ./car auto      -- control car by network"
+    echo "| ./car clean     -- clean useless image and model"
+    echo "V"
+}
+
+function help() { 
+  nothing
+  echo "         _____________________________ "
+  echo "        |                             |"
+  echo "        | q w                       p |"
+  echo "        | a   d              h j k l  |"
+  echo "        |                             |"
+  echo "        |                             |"
+  echo "        |            _____            |"
+  echo "        |           |space|           |"
+  echo "        |            -----            |"
+  echo "        |_____________________________|"
+  echo ""
+  echo "    w:  car start, adjust direction to forward"
+  echo "    a:  car start, adjust direction to left"
+  echo "    d:  car start, adjust direction to right"
+  echo "    h:  car camera, adjust camera left"
+  echo "    j:  car camera, adjust camera down"
+  echo "    k:  car camera, adjust camera up"
+  echo "    l:  car camera, adjust camera right"
+  echo "    p:  car auto, stop toy-car"
+  echo "    q:  car start/auto, end program, should use with Ctrl + c"
+  echo "space:  car start/auto, toy-car forward"
+}
+
+function init() {
+  mkdir -p html/data/test/a
+  mkdir -p html/data/test/d
+  mkdir -p html/data/test/w
+  mkdir -p html/data/train/a
+  mkdir -p html/data/train/d
+  mkdir -p html/data/train/w
+  mkdir -p html/images/a
+  mkdir -p html/images/d
+  mkdir -p html/images/w
+  mkdir -p network/model
+}
+
+function camera() {
+  python3 ./control/CameraAdjust.py
+}
+
+function start() {
+  echo "car start..."
+  python3 ./control/Car.py
+}
+
+function sendtar() {
+  python3 ./tools/sendtar.py
+}
+
+function movetar() {
+  tar xvf /tmp/images.tar -C ./html/images/
+}
+
+function split() {
+  python3 ./tools/train_test_split.py
+}
+
+function change() {
+  python3 ./tools/change.py ./html/data/
+}
+
+function train() {
+  echo "network train..."
+  python3 ./network/Network.py
+}
+
+function auto() {
+  echo "car drive..."
+  python3 ./network/CarAuto.py
+}
+
+function clean() {
+  echo "remove original image..."
+  rm -rf ./html/images/a/*
+  rm -rf ./html/images/d/*
+  rm -rf ./html/images/w/*
+  echo "remove splite data..." 
+  rm -rf ./html/data/train/a/*
+  rm -rf ./html/data/train/d/*
+  rm -rf ./html/data/train/w/*
+  rm -rf ./html/data/test/a/*
+  rm -rf ./html/data/test/d/*
+  rm -rf ./html/data/test/w/*
+  echo "remove model..."
+  rm ./network/model/*
+  echo "remove __pycache__"
+  rm -rf ./control/__pycache__
+  rm -rf ./network/__pycache__
+}
+
+function dragon() {
+  echo "move tar archive"
+  ./car movetar
+  echo "image split"
+  ./car split
+  echo "image change"
+  ./car change
+  echo "network train"
+  ./car train
+  echo "send model to raspberry pi"
+  scp network/model/model.pth pi@192.168.1.200:~
+}
+
+function main() {
+  echo $cmd
+  if [ -z $cmd ]; then
+    nothing   
+    exit -1
+  fi
+
+  if [ $cmd == 'help' ]; then
+    help 
+  elif [ $cmd == 'init' ]; then
+    init
+  elif [ $cmd == 'camera' ]; then
+    camera
+  elif [ $cmd == 'start' ]; then
+    start 
+  elif [ $cmd == 'sendtar' ]; then
+    sendtar 
+  elif [ $cmd == 'movetar' ]; then
+    movetar
+  elif [ $cmd == 'split' ]; then
+    split
+  elif [ $cmd == 'change' ]; then
+    change 
+  elif [ $cmd == 'train' ]; then
+    train
+  elif [ $cmd == 'auto' ]; then
+    auto
+  elif [ $cmd == 'clean' ]; then
+    clean
+  elif [ $cmd == 'dragon' ]; then
+    dragon
+  else
+    ./car
+  fi
+}
+
+cmd=$1
+main

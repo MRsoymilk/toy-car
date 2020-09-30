@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>toy-car</title>
+	<link rel="stylesheet" type="text/css" href="../static/style.css" />
+	<link rel="icon" type="image/png" href="../static/favicon.png" />
+ </head>
+
+<body>
+	<div class="title">
+		<h1>toy-car</h1>
+	</div>
+
+	<div class="camera">
+    <img src="{{ url_for('video_feed') }}" alt="camera" />
+	</div>
+
+  <div class="server">
+    <iframe src="http://192.168.1.200" tltile="Server"></iframe>
+  </div>
+</body>
+
+</html>
