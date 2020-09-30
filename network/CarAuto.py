@@ -5,8 +5,6 @@ import configparser
 from gpiozero import Servo, DistanceSensor, Motor
 from picamera import PiCamera
 
-from GetChar import GetChar
-
 
 print("read config")
 config = configparser.ConfigParser()
@@ -14,7 +12,6 @@ config.read('./config.ini')
 
 print("init")
 carCamera = PiCamera()
-getchar = GetChar()
 
 motor = Motor(config.getint('Pin', 'MotorA'), config.getint('Pin', 'MotorB'))
 Speed = config.getfloat('Car', 'Speed')
@@ -45,21 +42,6 @@ classes = Net.classes
 
 KEEP_GOING = True
 CAR_CONTROL = True
-
-def detector_control():
-    global CAR_CONTROL
-    global KEEP_GOING
-
-    while KEEP_GOING:
-        barrier_distance = sensor_distance.distance * 100
-        if barrier_distance < 10:
-            print('\r\n', "barrier in front: %s" % barrier_distance, end='', flush=True)
-            CAR_CONTROL = False
-            motor.stop()
-        else:
-            CAR_CONTROL = True
-        time.sleep(0.5)
-    print('\r\n', "dector control exit...")
 
 def judge():
     tick = time.time()
@@ -111,23 +93,6 @@ def car_control():
             print("end predict")
 
     print("car control exit...")
-
-def helper_control():
-    while True:
-        cmd = getchar()
-        if cmd == 'q':
-            global KEEP_GOING
-            KEEP_GOING = False
-            motor.stop()
-            print("exit...")
-            print("press Ctrl + c to exit web view")
-            exit(0)
-        elif cmd == ' ':
-            motor.forward(Speed)
-            print('\r\n', "power on")
-        elif cmd == 'p':
-            motor.stop()
-            print('\r\n', "power off")
 
 def main():
     car_control()
