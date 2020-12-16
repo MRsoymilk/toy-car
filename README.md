@@ -5,50 +5,44 @@
 ### 概述
 
 ```bash
-toy-car
-├── car                         # 快捷命令
-├── config.ini                  # toy-car配置文件
-├── control                     # 目录：手动控制相关
-│   ├── CameraAdjust.py         # 调节相机
-│   ├── CarCamera.py            # 类文件：相机
-│   ├── Car.py                  # toy-car主程序
-│   ├── GetChar.py              # 类文件：实时获取输入字符
-│   ├── static                  # flask项目目录
-│   │   ├── favicon.png         # 网页图标
-│   │   └── style.css           # 网页样式文件
-│   └── templates               # flask项目目录
-│       └── index.html          # 网页文件
-├── html                        # nginx图片服务器目录
-│   └── index.html              # 网页文件
-├── network                     # 机器学习网络目录
-│   ├── CarAuto.py              # toy-car自动驾驶主程序
-│   ├── Net.py                  # 机器学习网络模型
-│   └── Network.py              # 机器学习网络训练程序
-├── README.md                   # 说明文件
-└── tools                       # 工具目录
-    ├── change.py               # 图像变换程序
-    ├── sendtar.py              # raspberry pi发送压缩包程序
-    └── train_test_split.py     # 拆分训练集与测试集（7:3）
+├── car                       # 快捷命令
+├── config.ini                # toy-car 配置文件
+├── control                   # 目录：手动控制相关
+│   ├── Car.py                # 读取配置文件，判断_Cmd.py或_View.py
+│   ├── _Cmd.py               # 基于命令行的采集工具
+│   ├── GetChar.py            # 类文件：实时获取输入字符
+│   └── _View.py              # 基于图形化界面的采集工具
+├── html                      # nginx图片服务器目录
+│   ├── data                  # 训练测试使用数据
+│   ├── index.html            # 网页文件
+│   └── rwby.jpg              # 测试图片
+├── network                   # 网络模型文件夹
+│   ├── _AutoAcc.py           # 使用OpenVINO加速的寻路程序
+│   ├── _Auto.py              # 使用Raspberry Pi CPU的寻路程序
+│   ├── Car.py                # 读取配置文件，判断_Auto.py或_AutoAcc.py
+│   ├── model                 # 模型文件
+│   │   ├── model.bin         # 计算棒使用，包含权重和偏差二进制数据。
+│   │   ├── model.mapping     # 计算棒使用，映射文件
+│   │   ├── model.onnx        # onnx格式网络数据文件
+│   │   ├── model.pth         # pytorch格式网络数据文件
+│   │   └── model.xml         # 计算棒使用，描述网络拓扑。
+│   ├── Net.py                # 网络模型
+│   ├── pytorch2onnx.py       # pytorch格式转onnx格式
+│   └── Train.py              # 模型训练文件
+├── README.md                 # 说明文件
+└── tools                     # 工具目录
+    └── check.py              # 移除空文件
 ```
 
 执行`./car init`后生成完整目录，增加目录：
 
 ```bash
 ├── html
-│   ├── data                    # 机器学习网络使用数据
-│   │   ├── test                # 测试数据
-│   │   │   ├── a               # 左转方向数据
-│   │   │   ├── d               # 右转方向数据
-│   │   │   └── w               # 无转动方向数据
-│   │   └── train               # 训练数据
-│   │       ├── a               # 左转方向数据
-│   │       ├── d               # 右转方向数据
-│   │       └── w               # 无转动方向数据
-│   └── images                  # toy-car原始数据
-│       ├── a                   # 左转方向图片
-│       ├── d                   # 右转方向图片
-│       └── w                   # 无转动方向图片
-├── network
+│   └── data                  # 网络训练测试使用数据
+│       ├── a                 # 左转方向数据
+│       ├── d                 # 右转方向数据
+│       └── w                 # 直行方向数据
+└─ network
     └── model
 ```
 
@@ -66,16 +60,12 @@ car               -- Simplified operation
 | ./car help      -- help infomation
 | ./car camera    -- adjust car camera by computer
 | ./car start     -- control car by computer
-| ./car sendtar   -- send tar archive to remote Host
-| ./car movetar   -- extra tar archive to ./html/images/, use in remote
-| ./car split     -- split original image to train(0.7) and test(0.3)
-| ./car change    -- change original image to 32x32 for network
+| ./car check     -- check if picture is empty
 | ./car train     -- train network
-| ./car dragon    -- ./car movetar, split, change, train, send model
 | ./car auto      -- control car by network
 | ./car clean     -- clean useless image and model
 V
-         _____________________________
+         _____________________________ 
         |                             |
         | q w                       p |
         | a   d              h j k l  |
@@ -94,40 +84,45 @@ V
     k:  car camera, adjust camera up
     l:  car camera, adjust camera right
     p:  car auto, stop toy-car
-    q:  car start/auto, end program, should use with Ctrl + c
-space:  car start/auto, toy-car forward
+    q:  car start/auto, end program
+space:  car start/auto, forward then stop; stop then forward
 ```
 
 #### `config.ini`
 
 `Pin`: 相应引脚
 
+- `CameraH`：水平方向调节舵机
+- `CameraV`：垂直方向调节舵机
+- `MotorA`：电机接口
+- `MotorB`：电机接口
+- `Direction`：方向控制舵机
+
 `Car`: 电机（Motor）速度和舵机（Servo）转向角度
 
-`Camera`: 相机拍摄图像尺寸和调整相机支架参数（抖动过大，未使用）
+- `Speed`：速度控制
+- `Left`：左转角度
+- `Right`：右转角度
 
-`Picture`: 机器学习网络使用图像尺寸
-
-`Target`:
-
-- `Host`: 远程主机（用于发送压缩包，raspberry pi 训练速度太慢）
-- `File`: 原始数据文件夹
 
 `Network`:
 
-- `Train`: 训练集目录
-- `Test`: 测试集目录
-- `Epoch`: 训练更新次数
+- `BatchSize`：一次处理数量
+- `Data`：训练数据目录
+- `Epoch`： 训练更新次数
 - `LearnRate`: 学习率
-- `Model`: 模型存放位置
+- `Model`： 模型存放位置
+- `OpenVINO`：Intel Neural Compute Stick 2是否可用（`True`可用，`False`不可用）
+
+`View`:
+
+- `View`：图形化界面是否可用（`True`可用，`False`不可用）
 
 ## 主要依赖库
 
-- [Flask](https://pypi.org/project/Flask/)
 - [gpiozero](https://gpiozero.readthedocs.io/en/stable/)
 - [numpy](https://pypi.org/project/numpy/)
 - [opencv-python](https://pypi.org/project/opencv-python/)
-- [picamera](https://picamera.readthedocs.io/en/release-1.13/)
 - [Pillow](https://pypi.org/project/Pillow/)
 - [pytorch](https://pytorch.org/)中的[torch](https://github.com/pytorch/pytorch)与[torchvision](https://github.com/pytorch/vision.git)
 
@@ -274,3 +269,4 @@ sudo -E python3 setup.py install
 ```bash
 sudo -E python3 setup.py bdist_wheel
 ```
+
