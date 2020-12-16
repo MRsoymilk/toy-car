@@ -1,10 +1,18 @@
 import torch.nn as nn
 import torch.nn.functional as F
+import torchvision.transforms as transforms
+import os
+import configparser
 
-classes = ('a', 'd', 'w')
-
-NET_OUTPUT = len(classes)
-
+transformations = transforms.Compose([
+    transforms.Resize((32, 32)),
+    transforms.ToTensor(),
+    transforms.Normalize(
+        [0.485, 0.456, 0.406],
+        [0.229, 0.224, 0.225])
+])
+classes = ['a', 'd', 'w']
+output_class = 3
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -13,7 +21,7 @@ class Net(nn.Module):
         self.conv2 = nn.Conv2d(6, 16, 5)
         self.fc1 = nn.Linear(16 * 5 * 5, 120)
         self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, NET_OUTPUT)
+        self.fc3 = nn.Linear(84, output_class)
 
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x)))
