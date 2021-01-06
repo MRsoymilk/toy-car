@@ -37,28 +37,28 @@ while True:
     if flag == ord('q') or flag == ord('Q'):
         break
     # adjust camera
-    elif flag == ord('h') or flag == ord('H')::
+    elif flag == ord('h') or flag == ord('H'):
         if value_camera_h + 0.1 <= 1:
             value_camera_h += 0.1
             servo_camera_h.value = value_camera_h
             time.sleep(0.1)
             servo_camera_h.detach()
         print("left camera, value {:.2f}".format(value_camera_h))
-    elif flag == ord('j') or flag == ord('J')::
+    elif flag == ord('j') or flag == ord('J'):
         if value_camera_v + 0.1 <= 1:
             value_camera_v += 0.1
             servo_camera_v.value = value_camera_v
             time.sleep(0.1)
             servo_camera_v.detach()
         print("down camera, value {:.2f}".format(value_camera_v))
-    elif flag == ord('k') or flag == ord('K')::
+    elif flag == ord('k') or flag == ord('K'):
         if value_camera_v - 0.1 >= -1:
             value_camera_v -= 0.1
             servo_camera_v.value = value_camera_v
             time.sleep(0.1)
             servo_camera_v.detach()
         print("up camera, value {:.2f}".format(value_camera_v))
-    elif flag == ord('l') or flag == ord('L')::
+    elif flag == ord('l') or flag == ord('L'):
         if value_camera_h - 0.1 > -1:
             value_camera_h -= 0.1
             servo_camera_h.value = value_camera_h
@@ -66,21 +66,21 @@ while True:
             servo_camera_h.detach()
         print("right camera, value {:.2f}".format(value_camera_h))
     # car motion
-    elif flag == ord('w') or flag == ord('W')::
+    elif flag == ord('w') or flag == ord('W'):
         direction.value = 0
         time.sleep(0.2)
         direction.detach()
         threading.Thread(target=cv2.imwrite, args=(
             File + '/w/' + str(time.time()) + '.png', frame,)).start()
         print("car forward")
-    elif flag == ord('a') or flag == ord('A')::
+    elif flag == ord('a') or flag == ord('A'):
         direction.value = Left
         time.sleep(0.2)
         direction.detach()
         threading.Thread(target=cv2.imwrite, args=(
             File + '/a/' + str(time.time()) + '.png', frame,)).start()
         print("car left")
-    elif flag == ord('d') or flag == ord('D')::
+    elif flag == ord('d') or flag == ord('D'):
         direction.value = Right
         time.sleep(0.2)
         direction.detach()
@@ -94,7 +94,7 @@ while True:
         else:
             motor.value = 0
             print("... pause ...")
-    elif flag == ord('p') or flag == ord('P')::
+    elif flag == ord('p') or flag == ord('P'):
         motor.value = 0
         print("... pause ...")
 
