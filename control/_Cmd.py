@@ -84,4 +84,3 @@ while True:
         motor.value = 0
         print("... pause ...")
 
-capture.release()

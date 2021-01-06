@@ -144,16 +144,13 @@ sudo apt install nginx
 sudo vim /etc/nginx/sites-available/default
 ```
 
-增加内容，其中`root`位置具体到项目可能有所不同。
+修改内容，其中`root`位置具体到项目可能有所不同。
 
 ```conf
-location /images/ {
-    root /home/pi/toy-car/html;
-    autoindex on;
-}
+root /home/pi/toy-car/html;
 
-location /data/ {
-    root /home/pi/toy-car/html;
+location / {
+    try_files $uri $uri/ =404;
     autoindex on;
 }
 ```
