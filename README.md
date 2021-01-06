@@ -1,5 +1,14 @@
 # toy-car
 
+环境：
+- 树莓派3B+
+- raspbian 32位
+
+`uname -a`：
+```bash
+Linux raspberrypi 5.4.79-v7+ #1373 SMP Mon Nov 23 13:22:33 GMT 2020 armv7l GNU/Linux
+```
+
 ## 文件夹说明
 
 ![car](https://s3.ax1x.com/2020/12/30/rXpdMt.png)
@@ -163,11 +172,41 @@ location / {
 autoindex_localtime on;
 ```
 
+### 安装`opencv`
+
+```bash
+sudo apt install python3-opencv
+```
+
 ### 安装`pytorch`
 
-`pytorch`官网没有`arm`版本，可以在网上找别人打包的`.whl`文件（我打包的[raspberry-torch](https://gitee.com/mrsoymilk/raspberry-torch)）或者手动编译安装。下面是手动安装过程：
+`pytorch`官网没有`arm`版本，可以在网上找别人打包的`.whl`文件（我打包的[raspberry-torch](https://gitee.com/mrsoymilk/raspberry-torch)）或者手动编译安装。
 
-#### `swap`扩容
+#### 使用打包文件
+
+```bash
+git clone https://gitee.com/mrsoymilk/raspberry-torch
+cd raspberry-torch
+pip3 install ./torch-1.7.0a0-cp37-cp37m-linux_armv7l.whl
+pip3 install ./torchvision-0.8.0a0+c36dc43-cp37-cp37m-linux_armv7l.whl
+```
+
+打开`python3`验证:
+
+```python
+import torch
+import torchvision
+```
+
+无报错说明成功。
+
+问题：`libopenblas.so.0: cannot open shared object file or directory`
+
+解决：`sudo apt install libopenblas-dev`
+
+#### 手动编译
+
+##### `swap`扩容
 
 不扩容的话会非常慢，导致异常的失败。
 
@@ -199,15 +238,15 @@ sudo dphys-swapfile setup
 sudo dphys-swapfile swapon
 ```
 
-#### 安装依赖
+##### 安装依赖
 
 ```bash
 sudo apt install libopenblas-dev libblas-dev m4 cmake python3-yaml libatlas-base-dev
 ```
 
-#### 编译`pytorch`
+##### 编译`pytorch`
 
-##### 编译`torch`
+###### 编译`torch`
 
 获取`pytorch`
 
@@ -248,7 +287,7 @@ sudo -E python3 setup.py install
 sudo -E python3 setup.py bdist_wheel
 ```
 
-##### 编译`torchvision`
+###### 编译`torchvision`
 
 获取`torchvision`
 
@@ -269,3 +308,6 @@ sudo -E python3 setup.py install
 sudo -E python3 setup.py bdist_wheel
 ```
 
+### 安装`OpenVINO`
+
+参考网址：[Install OpenVINO™ toolkit for Raspbian* OS ](https://docs.openvinotoolkit.org/latest/openvino_docs_install_guides_installing_openvino_raspbian.html)
